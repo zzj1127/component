@@ -1,0 +1,19 @@
+{
+  "data": {
+    "order": "DESC",
+    "others": [
+      {
+        "FACILITY_ID": "TCZHXG",
+        "CREATED_ON_BEG": "2020-05-08 11:27:51",
+        "CREATED_ON_END": "2020-05-08 23:59:59"
+      }
+    ],
+    "page": 1,
+    "rows": 999999,
+    "sort": "CREATED_ON"
+  },
+  "id": "20452A",
+  "md": "A009FA50A50A5F66B7EC6E5CE803081F",
+  "orgId": "njgjtythyyfwzx",
+  "ts": 1590567438929
+}

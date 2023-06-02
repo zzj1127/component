@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" type="text/css" href="./css/bootstrap.css">
+    <script type="text/javascript" src="./js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="./js/jquery-3.6.1.min.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="card-body">
+                <div>
+                    <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal"
+                        data-bs-target="#exampleModal">生成随机数</button>
+                </div>
+                <br>
+                <div>
+                    <ul class="list-group" id="NumerberList">
+                        <li class="list-group-item">A first item</li>
+                        <li class="list-group-item">A second item</li>
+                        <li class="list-group-item">A third item</li>
+                        <li class="list-group-item">A fourth item</li>
+                        <li class="list-group-item">A fifth item</li>
+                        <li class="list-group-item">......</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 模态框 -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">设置</h5>
+                
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form class="row g-3" id="ruleFrom">
+                        <div class="col-md-3">
+                            <label for="inputCity" class="form-label">总数</label>
+                            <input type="number" class="form-control" id="count">
+                        </div>
+                        <div class="col-md-5">
+                            <label for="inputState" class="form-label">分配方式</label>
+                            <select id="type" class="form-select">
+                                <option value="1" selected>随机</option>
+                                <option value="2">平分</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label for="inputZip" class="form-label">个数</label>
+                            <input type="number"   class="form-control" id="num">
+                        </div>
+                        <div class="col-md-2">
+                            <label for="inputZip" class="form-label">规则</label>
+                            <button  type="button" class="btn btn-primary " onclick="addHtml()">添加</button>
+                        </div>
+                        <hr/>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" onclick="getNumber()">提交</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+<script type="text/javascript">
+
+    function test1(){
+      alert(calcRandomNum('1','16'))  
+    }
+    var num=1
+    function addHtml(){
+        // if(num==4){
+        //     return;
+        // }
+        $("#ruleFrom").append(' <div class="col-md-3">'+
+                            ' <input type="number" placeholder="个数"  class="form-control" id="amount'+num+'">'+
+                            '</div>'+
+                        '<div class="col-md-4">'+
+                            '<input type="number"  placeholder="最小值"  class="form-control" id="minNum'+num+'">'+
+                            '</div>'+
+                     
+                        '<div class="col-md-4">'+
+                            '<input type="number" placeholder="最大值" class="form-control" id="maxNum'+num+'">'+
+                        '</div>')
+       num++;
+    }
+
+    function getRule(){
+        var ruleList =[]
+        if(num==1){
+            return ruleList
+        }
+        for(var i = 1 ;i<num;i++){
+            var amount = $("#amount"+i).val();
+            var minNum = $("#minNum"+i).val();
+            var maxNum = $("#maxNum"+i).val();
+            ruleList.push({
+                "amount":amount,
+                "min":minNum,
+                "max":maxNum
+            })
+        }
+        return ruleList
+    }
+    function getNumber() {
+       
+
+
+        var count = $("#count").val()
+        var num = $("#num").val()
+        var options = $("#type option:selected").val();
+        $("#NumerberList").html("");
+        if (options == 1) {
+            var arr = randGenerator(num, count)
+            for (var i = 0; i < arr.length; i++) {
+                $("#NumerberList").append(' <li class="list-group-item">' + arr[i] + '</li>')
+            }
+        }else{
+            var arr =[]
+            var a = (count/num).toFixed(2)
+            for(var i =0;i<num-1;i++){
+                $("#NumerberList").append(' <li class="list-group-item">'+a+'</li>')
+            }
+            $("#NumerberList").append(' <li class="list-group-item">'+Math.round(Subtr(count, a*(num-1)))+'</li>')
+        }
+        $(".modal").modal("hide");
+    }
+
+    function randGenerator(n, sum) {
+        var ruleList = getRule()
+        console.log(ruleList)
+        var aryRet = [];
+        var fSumTmp = sum;
+        var iAcc = 0;
+        var ruleNum=0
+        for(var i=0;i<ruleList.length;i++){
+            for(var j = 0;j<ruleList[i].amount;j++){
+               console.log(ruleList[i].min,ruleList[i].max)
+                var iTmp = calcRandomNum(parseInt(ruleList[i].min),parseInt(ruleList[i].max));
+                aryRet.push(iTmp);
+                fSumTmp -= iTmp;
+                iAcc += iTmp;
+                ruleNum++;
+            }
+        }
+
+        for (var i = 0; i < (n-ruleNum - 1); i++) {
+         
+            var iTmp = calcRandomNum(1,sum/n);
+            aryRet.push(iTmp);
+            fSumTmp -= iTmp;
+            iAcc += iTmp;
+        }
+       
+        aryRet.push(Subtr(sum, iAcc));
+        return aryRet;
+    }
+    function calcRandomNum(min, max) {
+        return parseFloat((Math.random() * (max - min ) + min).toFixed(2));
+    }
+    function Subtr(arg1, arg2) {
+        var r1, r2, m, n;
+        try { r1 = arg1.toString().split(".")[1].length } catch (e) { r1 = 0 }
+        try { r2 = arg2.toString().split(".")[1].length } catch (e) { r2 = 0 }
+        m = Math.pow(10, Math.max(r1, r2));
+        // n = (r1 >= r2) ? r1 : r2;
+        return ((arg1 * m - arg2 * m) / m).toFixed(2);
+    }
+</script>
+
+</html>

@@ -1,0 +1,151 @@
+<!doctype html>
+<html class="no-js" lang="">
+
+<head>
+  <meta charset="utf-8">
+  <title></title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="manifest" href="site.webmanifest">
+  <link rel="apple-touch-icon" href="icon.png">
+  <!-- Place favicon.ico in the root directory -->
+
+  <link rel="stylesheet" href="css/normalize.css">
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
+  <script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+  <meta name="theme-color" content="#fafafa">
+</head>
+<style>
+  .others{
+    background-color: white;
+    height: auto;
+    width: 300px;
+    margin-left: 118px;
+  }
+</style>
+<body>
+  <!--[if IE]>
+    <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience and security.</p>
+  <![endif]-->
+  <div class="navbar ">
+    <center> <h3>接口测试</h3></center>
+  </div>
+
+  <div class="container-fluid">
+    <div class="col-md-6">
+      <div class="panel panel-info ">
+        <div class="panel-heading">输入</div>
+        <div class="panel-body">
+          <pre>
+           {
+              "data": {
+                "order": <input class="order" value="DESC"></input>,
+                 <div class="others"  contenteditable></div>
+                "page": 1,
+                "rows": 20,
+
+                "sort": <input class="sort"  contenteditable value='CREATED_ON'></input>
+
+              "id": "<input id="ids" value="20022A"> </input>",
+              "md": "<span id="md"></span>",
+              "orgId": "njgjtythyyfwzx",
+              "ts":<span id="ts"> 1590567438929</span>
+            }
+          </pre>
+          <button type="button" id="request" class="btn btn-primary">POST</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+
+      <div class="panel panel-info" >
+        <div class="panel-heading">结果</div>
+        <div class="panel-body">
+          <pre id="reslut"></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="https://blog-static.cnblogs.com/files/7qin/md5.js"></script>
+  <!-- Add your site or application content here -->
+  <script src="js/vendor/modernizr-3.8.0.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+  <script>window.jQuery || document.write('<script src="js/vendor/jquery-3.4.1.min.js"><\/script>')</script>
+  <script src="js/plugins.js"></script>
+  <script src="js/main.js"></script>
+
+  <!-- Google Analytics: change UA-XXXXX-Y to be your site's ID. -->
+  <script>
+    window.ga = function () { ga.q.push(arguments) }; ga.q = []; ga.l = +new Date;
+    ga('create', 'UA-XXXXX-Y', 'auto'); ga('set','transport','beacon'); ga('send', 'pageview')
+  </script>
+  <script src="https://www.google-analytics.com/analytics.js" async></script>
+</body>
+<script>
+  $(document).ready(function() {
+var data={
+  "order": "DESC",
+  "page": "1",
+  "rows": "999999",
+  "sort": "CREATED_ON"
+  }
+var paradeData ={
+  "data":data,
+
+  "md": "A009FA50A50A5F66B7EC6E5CE803081F",
+  "orgId": "njgjtythyyfwzx",
+
+}
+
+    var intervalId = setInterval(function () {
+        var ts = (new Date()).getTime();
+        $("#ts").html(ts)
+        var ids=$("#ids").val();
+        console.log(ids)
+
+        var md =hex_md5(ids+"njgjtythyyfwzx"+ts)
+        $("#md").html(md)
+      }, 1000)
+
+
+    $("button").click(function(){
+      var regex = /\{(.+?)\}/g;
+      var attr =$(".others").text();
+      var arr1 = attr.match(regex);
+      console.log(arr1[0])
+      // for (var i=0;i<arr1.length;i++){
+      //   var str1 = attr.replace(arr1[i],"|");
+      //   attr = str1;
+      // }
+      var others = []
+      for(var i=0;i<arr1.length;i++ ){
+        others.push( $.parseJSON(arr1[i]))
+      }
+
+      paradeData.ts=(new Date()).getTime();
+      paradeData.id=$("#ids").val();
+      paradeData.md=hex_md5(paradeData.id+"njgjtythyyfwzx"+paradeData.ts);
+
+      data.others= others;
+      data.order=$(".order").val();
+      data.sort=$(".sort").val()
+      paradeData.data =data
+      $.ajax({
+        type:'POST',
+        url:'http://localhost:8089/webresources/partnerService/executeCommand',
+        data:paradeData,
+        dataType:"json",
+        success:function(data){
+       $("#reslut").html(data)
+        }
+      })
+    });
+
+  });
+</script>
+</html>
